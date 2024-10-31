@@ -1,54 +1,78 @@
-
 <script>
-import { format, lastDayOfMonth } from 'date-fns'
+import { format, lastDayOfMonth } from "date-fns";
 
 export default {
-  data () {
+  data() {
     return {
-      months: ['Janaury','February','March','April','May','June','July','August','September','October','November','December'],
-      years: ['2015','2016','2017','2018','2019','2020','2021','2022','2023','2024'],
+      months: [
+        "Janaury",
+        "February",
+        "March",
+        "April",
+        "May",
+        "June",
+        "July",
+        "August",
+        "September",
+        "October",
+        "November",
+        "December",
+      ],
+      years: [
+        "2015",
+        "2016",
+        "2017",
+        "2018",
+        "2019",
+        "2020",
+        "2021",
+        "2022",
+        "2023",
+        "2024",
+      ],
       projects: null,
       totalHours: 0,
       rate: 0,
       invoiceDate: new Date(),
       currentYear: new Date().getFullYear(),
       currentMonth: new Date().getMonth(),
-    }
+    };
   },
   computed: {
     title: function () {
-      return 'Bust Out - ' + format(this.invoiceDate, 'MMMM yyyy')
+      return "Sodal - " + format(this.invoiceDate, "MMMM yyyy");
     },
     invoiceNumber: function () {
-      return 'bustout-' + format(this.invoiceDate, 'MMyy')
+      return "sodal-" + format(this.invoiceDate, "MMyy");
     },
     invoiceMonthDigit: function () {
-      return Number(format(this.invoiceDate, 'MM'))
+      return Number(format(this.invoiceDate, "MM"));
     },
     invoiceYearDigit: function () {
-      return Number(format(this.invoiceDate, 'yyyy'))
+      return Number(format(this.invoiceDate, "yyyy"));
     },
     dateBilled: function () {
-      return format(new Date(), 'MM/dd/yyyy')
-    }
+      return format(new Date(), "MM/dd/yyyy");
+    },
   },
-  mounted () {
+  mounted() {
     this.getTimeEntries();
   },
   methods: {
     getTimeEntries: async function () {
-      const month = format(this.invoiceDate, 'MM');
-      const year = format(this.invoiceDate, 'yyyy');
+      const month = format(this.invoiceDate, "MM");
+      const year = format(this.invoiceDate, "yyyy");
       const from = `${year}-${month}-01`;
-      const to = format(lastDayOfMonth(this.invoiceDate), 'yyyy-MM-dd');
+      const to = format(lastDayOfMonth(this.invoiceDate), "yyyy-MM-dd");
       const endpoint = `https://api.harvestapp.com/api/v2/time_entries?from=${from}&to=${to}`;
-      const token = '1187198.pt.RUakaA084t0NFpxwdu6ZHvV98Ag0WvFHcJ0JNhAxN95qxcRotLlalt1lVEWsSprC0wOiAo4yJ_yezzBETUiKpQ;';
-      const account = '96921';
-      const query = `${endpoint}&access_token=${token}&account_id=${account}`
+      const token =
+        "1187198.pt.RUakaA084t0NFpxwdu6ZHvV98Ag0WvFHcJ0JNhAxN95qxcRotLlalt1lVEWsSprC0wOiAo4yJ_yezzBETUiKpQ;";
+      const account = "96921";
+      const query = `${endpoint}&access_token=${token}&account_id=${account}`;
       const res = await fetch(query);
       const data = await res.json();
-      this.rate = parseInt(125, 10);
-      this.parseResponse(data)
+      this.rate = parseInt(110, 10);
+      this.parseResponse(data);
       this.data = data;
     },
     parseResponse: function (data) {
@@ -68,19 +92,48 @@ export default {
           id: id,
           name: name,
           client: client,
-        }
+        };
 
         if (projects[id]) {
-          project.hours = hours + projects[id].hours
+          project.hours = hours + projects[id].hours;
         } else {
-          project.hours = hours
+          project.hours = hours;
         }
 
         projects[id] = project;
         totalHours += hours;
       }
-      this.projects = projects;
-      this.totalHours = totalHours;
+
+      // this.projects = projects;
+
+      // Manual Setup
+      this.projects = {
+        1: {
+          hours: 28,
+          name: "10/1-10/4: Foundation, Start Modules, Check Ready",
+        },
+        2: {
+          hours: 27,
+          name: "10/7-10/11: Communication, Config Crud, Long Process",
+        },
+        3: {
+          hours: 35,
+          name: "10/14-10/18: Interfaces and Views, Client Routing",
+        },
+        4: {
+          hours: 35,
+          name: "10/21-10/25: Loading, File Upload, Auth",
+        },
+        5: {
+          hours: 32,
+          name: "10/28-10/31: Auth, Table Component",
+        },
+      };
+
+      this.totalHours = Object.values(this.projects).reduce(
+        (total, project) => total + project.hours,
+        0
+      );
     },
     onMonthChange: function (event) {
       this.currentMonth = Number(event.target.value);
@@ -91,20 +144,27 @@ export default {
       this.currentYear = Number(event.target.value);
       this.invoiceDate = new Date(this.currentYear, this.currentMonth, 1);
       this.getTimeEntries();
-    }
-  }
-
-}
+    },
+  },
+};
 </script>
 
 <template>
   <div>
     <div class="hide-for-print">
       <select @change="onMonthChange($event)" v-model="currentMonth">
-        <option v-for="(month,index) in months" v-bind:key="index" :value="index">{{ month }}</option>
+        <option
+          v-for="(month, index) in months"
+          v-bind:key="index"
+          :value="index"
+        >
+          {{ month }}
+        </option>
       </select>
       <select @change="onYearChange($event)" v-model="currentYear">
-        <option v-for="(year,index) in years" v-bind:key="index" :value="year">{{ year }}</option>
+        <option v-for="(year, index) in years" v-bind:key="index" :value="year">
+          {{ year }}
+        </option>
       </select>
     </div>
     <div id="page">
@@ -115,9 +175,9 @@ export default {
       <div class="to">
         <p>
           <b>Invoice For</b><br />
-          Bust Out<br />
-          514 N Third Street<br />
-          Minneapolis, MN 55401
+          Sodal<br />
+          195 McGregor St., Suite 323<br />
+          Manchester, NH 03102
         </p>
       </div>
       <div class="from">
@@ -137,7 +197,7 @@ export default {
           <dt>Terms</dt>
           <dd>On Receipt</dd>
           <dt>Amount</dt>
-          <dd>${{ (totalHours * rate).toFixed(2)}}</dd>
+          <dd>${{ (totalHours * rate).toFixed(2) }}</dd>
         </dl>
       </div>
       <div class="entries">
@@ -155,145 +215,144 @@ export default {
               <td>{{ item.name }}</td>
               <td>{{ item.hours }}</td>
               <td>${{ rate.toFixed(2) }}</td>
-              <td>${{ (item.hours * rate).toFixed(2)}}</td>
+              <td>${{ (item.hours * rate).toFixed(2) }}</td>
             </tr>
           </tbody>
         </table>
       </div>
       <div class="due">
-        <h2><span>Amount Due:</span> ${{ (totalHours * rate).toFixed(2)}}</h2>
+        <h2><span>Amount Due:</span> ${{ (totalHours * rate).toFixed(2) }}</h2>
       </div>
     </div>
   </div>
 </template>
 
-
 <style lang="scss">
-  @page {
-    margin: 0;
+@page {
+  margin: 0;
+}
+@media print {
+  .hide-for-print {
+    display: none;
   }
-  @media print {
-    .hide-for-print {
-      display: none;
-    }
-  }
+}
 
-  * {
-    box-sizing: border-box;
-  }
+* {
+  box-sizing: border-box;
+}
 
-  body {
-    -webkit-print-color-adjust: exact !important;
-    font-family: "Biome Pro", serif;
-    font-size: 9px;
-    background: #222222;
-  }
+body {
+  -webkit-print-color-adjust: exact !important;
+  font-family: "Biome Pro", serif;
+  font-size: 9px;
+  background: #222222;
+}
 
-  #page {
-    position: relative;
-    margin: 50px auto;
-    background-color: white;
-    background-size: 670px 867px;
-    width: 670px;
-    height: 867px;
-    padding: 335px 130px 0 130px;
-    transform: scale(1.3) translateY(110px);
-  }
+#page {
+  position: relative;
+  margin: 50px auto;
+  background-color: white;
+  background-size: 670px 867px;
+  width: 670px;
+  height: 867px;
+  padding: 335px 130px 0 130px;
+  transform: scale(1.3) translateY(110px);
+}
 
-  .entries {
-    table {
-      width: 100%;
-      text-align: right;
-      border-collapse: collapse;
-    }
-    td, th {
-      padding: 0;
-      height: 26px;
-    }
-    th {
-      font-weight: bold;
-      padding-bottom: 5px;
-    }
-    tr th:first-child,
-    tr td:first-child {
-      padding-left: 9px;
-      text-align: left;
-    }
-    tr th:last-child,
-    tr td:last-child {
-      padding-right: 9px;
-      font-weight: bold;
-    }
-    tbody tr:nth-child(odd) {
-      background: rgba(0,0,0,.05);
-    }
-  }
-
-  h1 {
-    font-size: 13px;
-    margin: 0;
-  }
-  h2 {
-    font-size: 11px;
-    margin: 0;
-  }
-  p {
-    line-height: 13px;
-    margin: 0;
-  }
-
-  .title {
-    position: absolute;
-    top: 140px;
-    left: 140px;
-
-  }
-
-  .to {
-    position: absolute;
-    top: 235px;
-    right: 140px;
-    left: 420px;
-  }
-
-  .from {
-    position: absolute;
-    top: 145px;
-    right: 140px;
-    left: 420px;
-  }
-
-  .details {
-    position: absolute;
-    top: 235px;
-    left: 140px;
-    right: 420px;
-
-    dl {
-      margin: 0;
-      line-height: 13px;
-    }
-    dt {
-      margin: 0;
-      padding: 0;
-      float: left;
-      clear: both;
-      font-weight: bold;
-    }
-    dd {
-      margin: 0;
-      padding: 0;
-      float: right;
-    }
-  }
-
-  .due {
+.entries {
+  table {
+    width: 100%;
     text-align: right;
-    margin: 40px 10px 0 0;
-
-    span {
-      margin-right: 15px;
-    }
+    border-collapse: collapse;
   }
+  td,
+  th {
+    padding: 0 10px;
+    height: 26px;
+  }
+  th {
+    font-weight: bold;
+    padding-bottom: 5px;
+  }
+  tr th:first-child,
+  tr td:first-child {
+    padding-left: 9px;
+    text-align: left;
+    width: 100%;
+  }
+  tr th:last-child,
+  tr td:last-child {
+    padding-right: 9px;
+    font-weight: bold;
+  }
+  tbody tr:nth-child(odd) {
+    background: rgba(0, 0, 0, 0.05);
+  }
+}
 
+h1 {
+  font-size: 13px;
+  margin: 0;
+}
+h2 {
+  font-size: 11px;
+  margin: 0;
+}
+p {
+  line-height: 13px;
+  margin: 0;
+}
+
+.title {
+  position: absolute;
+  top: 140px;
+  left: 140px;
+}
+
+.to {
+  position: absolute;
+  top: 235px;
+  right: 140px;
+  left: 420px;
+}
+
+.from {
+  position: absolute;
+  top: 145px;
+  right: 140px;
+  left: 420px;
+}
+
+.details {
+  position: absolute;
+  top: 235px;
+  left: 140px;
+  right: 420px;
+
+  dl {
+    margin: 0;
+    line-height: 13px;
+  }
+  dt {
+    margin: 0;
+    padding: 0;
+    float: left;
+    clear: both;
+    font-weight: bold;
+  }
+  dd {
+    margin: 0;
+    padding: 0;
+    float: right;
+  }
+}
+
+.due {
+  text-align: right;
+  margin: 40px 10px 0 0;
+
+  span {
+    margin-right: 15px;
+  }
+}
 </style>
