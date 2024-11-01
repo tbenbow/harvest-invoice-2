@@ -40,10 +40,10 @@ export default {
   },
   computed: {
     title: function () {
-      return "Sodal - " + format(this.invoiceDate, "MMMM yyyy");
+      return "Bust Out - " + format(this.invoiceDate, "MMMM yyyy");
     },
     invoiceNumber: function () {
-      return "sodal-" + format(this.invoiceDate, "MMyy");
+      return "bustout-" + format(this.invoiceDate, "MMyy");
     },
     invoiceMonthDigit: function () {
       return Number(format(this.invoiceDate, "MM"));
@@ -71,7 +71,7 @@ export default {
       const query = `${endpoint}&access_token=${token}&account_id=${account}`;
       const res = await fetch(query);
       const data = await res.json();
-      this.rate = parseInt(110, 10);
+      this.rate = parseInt(125, 10);
       this.parseResponse(data);
       this.data = data;
     },
@@ -109,24 +109,12 @@ export default {
       // Manual Setup
       this.projects = {
         1: {
-          hours: 28,
-          name: "10/1-10/4: Foundation, Start Modules, Check Ready",
+          hours: 1,
+          name: "Inrupt Call",
         },
         2: {
-          hours: 27,
-          name: "10/7-10/11: Communication, Config Crud, Long Process",
-        },
-        3: {
-          hours: 35,
-          name: "10/14-10/18: Interfaces and Views, Client Routing",
-        },
-        4: {
-          hours: 35,
-          name: "10/21-10/25: Loading, File Upload, Auth",
-        },
-        5: {
-          hours: 32,
-          name: "10/28-10/31: Auth, Table Component",
+          hours: 0.75,
+          name: "Ordway Accessibility Task Review",
         },
       };
 
@@ -175,9 +163,9 @@ export default {
       <div class="to">
         <p>
           <b>Invoice For</b><br />
-          Sodal<br />
-          195 McGregor St., Suite 323<br />
-          Manchester, NH 03102
+          Bust Out<br />
+          514 N Third Street<br />
+          Minneapolis, MN 55401
         </p>
       </div>
       <div class="from">
